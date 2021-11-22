@@ -1,6 +1,6 @@
 {
   "name": "@nodestrap/navbar",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "A responsive navigation header. Supports for branding, navigation and more.",
   "type": "module",
   "main": "dist/Navbar.jsx",
