@@ -651,15 +651,15 @@ export function NavbarMenu(props) {
     // fn props:
     const pressFn = props.press ?? props.active;
     // jsx:
-    return (<Button 
+    return (React.createElement(Button
     // other props:
-    {...props} 
-    // accessibilities:
-    press={pressFn} 
-    // variants:
-    mild={props.mild ?? false} 
-    // classes:
-    mainClass={props.mainClass ?? ''}/>);
+    , { ...props, 
+        // accessibilities:
+        press: pressFn, 
+        // variants:
+        mild: props.mild ?? false, 
+        // classes:
+        mainClass: props.mainClass ?? '' }));
 }
 export { NavbarMenu as Menu };
 export function Navbar(props) {
@@ -683,80 +683,76 @@ export function Navbar(props) {
     const logoFn = (() => {
         // nodestrap's component:
         if (isTypeOf(logo, Element))
-            return (<logo.type 
+            return (React.createElement(logo.type
             // other props:
-            {...logo.props} 
-            // classes:
-            classes={[...(logo.props.classes ?? []),
+            , { ...logo.props, 
+                // classes:
+                classes: [...(logo.props.classes ?? []),
                     'logo', // inject logo class
-                ]}/>);
+                ] }));
         // other component:
-        return logo && (<div 
-        // classes:
-        className='logo wrapper'>
-                {logo}
-            </div>);
+        return logo && (React.createElement("div", { 
+            // classes:
+            className: 'logo wrapper' }, logo));
     })();
     const togglerFn = (() => {
         // default (unset):
         if (toggler === undefined)
-            return (<TogglerMenuButton 
+            return (React.createElement(TogglerMenuButton
             // accessibilities:
-            active={isActive} onActiveChange={(newActive) => {
+            , { 
+                // accessibilities:
+                active: isActive, onActiveChange: (newActive) => {
                     setActive(newActive);
-                }} 
-            // variants:
-            mild={mildFn} 
-            // classes:
-            classes={[
+                }, 
+                // variants:
+                mild: mildFn, 
+                // classes:
+                classes: [
                     'toggler', // inject toggler class
-                ]}/>);
+                ] }));
         // nodestrap's component:
         if (isTypeOf(toggler, Element))
-            return (<toggler.type 
+            return (React.createElement(toggler.type
             // other props:
-            {...toggler.props} 
-            // classes:
-            classes={[...(toggler.props.classes ?? []),
+            , { ...toggler.props, 
+                // classes:
+                classes: [...(toggler.props.classes ?? []),
                     'toggler', // inject toggler class
-                ]} {...(isTypeOf(toggler, Indicator) ? {
-                // accessibilities:
-                active: toggler.props.active ?? isActive,
-            } : {})} {...(isTypeOf(toggler, Check) ? {
-                // accessibilities:
-                onActiveChange: toggler.props.onActiveChange ?? ((newActive) => {
-                    setActive(newActive);
-                }),
-            } : {})}/>);
+                ], ...(isTypeOf(toggler, Indicator) ? {
+                    // accessibilities:
+                    active: toggler.props.active ?? isActive,
+                } : {}), ...(isTypeOf(toggler, Check) ? {
+                    // accessibilities:
+                    onActiveChange: toggler.props.onActiveChange ?? ((newActive) => {
+                        setActive(newActive);
+                    }),
+                } : {}) }));
         // other component:
-        return toggler && (<div 
-        // classes:
-        className='toggler wrapper'>
-                {toggler}
-            </div>);
+        return toggler && (React.createElement("div", { 
+            // classes:
+            className: 'toggler wrapper' }, toggler));
     })();
     // jsx:
-    return (<Indicator 
-    // other props:
-    {...restProps} 
-    // semantics:
-    semanticTag={props.semanticTag ?? 'nav'} semanticRole={props.semanticRole ?? 'navigation'} 
-    // essentials:
-    elmRef={(elm) => {
+    return (React.createElement(Indicator, { ...restProps, 
+        // semantics:
+        semanticTag: props.semanticTag ?? 'nav', semanticRole: props.semanticRole ?? 'navigation', 
+        // essentials:
+        elmRef: (elm) => {
             setRef(props.elmRef, elm);
             setRef(navbarRef, elm);
-        }} 
-    // accessibilities:
-    active={isActive} 
-    // variants:
-    mild={mildFn} 
-    // classes:
-    mainClass={props.mainClass ?? sheet.main} stateClasses={[...(props.stateClasses ?? []),
+        }, 
+        // accessibilities:
+        active: isActive, 
+        // variants:
+        mild: mildFn, 
+        // classes:
+        mainClass: props.mainClass ?? sheet.main, stateClasses: [...(props.stateClasses ?? []),
             compactState.class,
-        ]} 
-    // events:
-    // watch [escape key] on the whole navbar, including menus & toggler:
-    onKeyUp={(e) => {
+        ], 
+        // events:
+        // watch [escape key] on the whole navbar, including menus & toggler:
+        onKeyUp: (e) => {
             props.onKeyUp?.(e);
             if (!e.defaultPrevented) {
                 if (isActive && ((e.key === 'Escape') || (e.code === 'Escape'))) {
@@ -764,14 +760,14 @@ export function Navbar(props) {
                     e.preventDefault();
                 } // if
             } // if
-        }}>
-            {logoFn}
-            {togglerFn}
-            {children && <div 
-        // classes:
-        className='menus' 
-        // events:
-        onAnimationEnd={(e) => {
+        } },
+        logoFn,
+        togglerFn,
+        children && React.createElement("div", { 
+            // classes:
+            className: 'menus', 
+            // events:
+            onAnimationEnd: (e) => {
                 /*
                     active/passive rely on `.menus`' active/passive
                     
@@ -781,21 +777,18 @@ export function Navbar(props) {
                 */
                 // triggers `Navbar`'s onAnimationEnd event
                 e.currentTarget.parentElement?.dispatchEvent(new AnimationEvent('animationend', { animationName: e.animationName, bubbles: true }));
-            }}>
-                {React.Children.map(children, (child, index) => (isTypeOf(child, NavbarMenu)
-                ?
-                    <child.type 
-                    // other props:
-                    {...child.props} 
+            } }, React.Children.map(children, (child, index) => (isTypeOf(child, NavbarMenu)
+            ?
+                React.createElement(child.type
+                // other props:
+                , { ...child.props, 
                     // essentials:
-                    key={child.key ?? index}/>
-                :
-                    <NavbarMenu 
+                    key: child.key ?? index })
+            :
+                React.createElement(NavbarMenu
+                // essentials:
+                , { 
                     // essentials:
-                    key={index}>
-                        {child}
-                    </NavbarMenu>))}
-            </div>}
-        </Indicator>);
+                    key: index }, child))))));
 }
 export { Navbar as default };

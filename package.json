@@ -1,9 +1,9 @@
 {
   "name": "@nodestrap/navbar",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A responsive navigation header. Supports for branding, navigation and more.",
   "type": "module",
-  "main": "dist/Navbar.jsx",
+  "main": "dist/Navbar.js",
   "types": "dist/Navbar.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,17 +36,17 @@
     "@cssfn/css-var": "^1.0.2",
     "@cssfn/cssfn": "^1.0.3",
     "@cssfn/react-cssfn": "^1.0.3",
-    "@nodestrap/action-control": "^4.0.2",
-    "@nodestrap/basic": "^4.0.2",
-    "@nodestrap/button": "^4.0.1",
-    "@nodestrap/check": "^4.0.1",
-    "@nodestrap/container": "^4.0.2",
-    "@nodestrap/control": "^4.0.2",
-    "@nodestrap/element": "^4.0.1",
-    "@nodestrap/indicator": "^4.0.2",
-    "@nodestrap/toggler-menu-button": "^4.0.1",
-    "@nodestrap/utilities": "^4.0.0",
-    "@types/react": "^17.0.36",
+    "@nodestrap/action-control": "^4.0.3",
+    "@nodestrap/basic": "^4.0.3",
+    "@nodestrap/button": "^4.0.2",
+    "@nodestrap/check": "^4.0.2",
+    "@nodestrap/container": "^4.0.3",
+    "@nodestrap/control": "^4.0.3",
+    "@nodestrap/element": "^4.0.2",
+    "@nodestrap/indicator": "^4.0.3",
+    "@nodestrap/toggler-menu-button": "^4.0.2",
+    "@nodestrap/utilities": "^4.0.1",
+    "@types/react": "^17.0.37",
     "react": "^17.0.2"
   }
 }
