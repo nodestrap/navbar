@@ -3,7 +3,6 @@ import {
     default as React,
     useState,
     useRef,
-    useLayoutEffect,
 }                           from 'react'         // base technology of our nodestrap components
 
 // cssfn:
@@ -50,6 +49,9 @@ import {
 }                           from '@cssfn/css-config'  // Stores & retrieves configuration using *css custom properties* (css variables)
 
 // nodestrap utilities:
+import {
+    useIsomorphicLayoutEffect,
+}                           from '@nodestrap/hooks'
 import {
     // utilities:
     isTypeOf,
@@ -184,7 +186,7 @@ export const useCompactState = <TElement extends HTMLElement = HTMLElement>(prop
     
     
     
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const navbar = navbarRef.current;
         if (!navbar)                     return; // navbar was unloaded => nothing to do
         if (props.compact !== undefined) return; // controllable [compact] is set => no uncontrollable required

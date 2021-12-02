@@ -1,5 +1,5 @@
 // react:
-import { default as React, useState, useRef, useLayoutEffect, } from 'react'; // base technology of our nodestrap components
+import { default as React, useState, useRef, } from 'react'; // base technology of our nodestrap components
 import { 
 // compositions:
 composition, mainComposition, imports, 
@@ -15,6 +15,7 @@ import { createCssConfig,
 // utilities:
 usesGeneralProps, usesPrefixedProps, usesSuffixedProps, overwriteProps, } from '@cssfn/css-config'; // Stores & retrieves configuration using *css custom properties* (css variables)
 // nodestrap utilities:
+import { useIsomorphicLayoutEffect, } from '@nodestrap/hooks';
 import { 
 // utilities:
 isTypeOf, setRef, } from '@nodestrap/utilities';
@@ -74,7 +75,7 @@ export const useCompactState = (props, navbarRef) => {
      * state is compact/full based on [controllable compact] (if set) and fallback to [uncontrollable compact]
      */
     const compactFn = props.compact /*controllable*/ ?? compactDn /*uncontrollable*/;
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const navbar = navbarRef.current;
         if (!navbar)
             return; // navbar was unloaded => nothing to do
