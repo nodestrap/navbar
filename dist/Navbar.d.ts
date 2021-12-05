@@ -2,7 +2,9 @@ import { default as React } from 'react';
 import type { PropEx } from '@cssfn/css-types';
 import { ThemeName } from '@nodestrap/basic';
 import { TogglerActiveProps, IndicatorProps } from '@nodestrap/indicator';
-import { ButtonProps } from '@nodestrap/button';
+import { CurrentActiveProps, useCurrentActive, NavButtonProps } from '@nodestrap/nav-button';
+export type { CurrentActiveProps };
+export { useCurrentActive };
 export declare const markActive: () => import("@cssfn/cssfn").StyleCollection;
 export declare const dontMarkActive: () => import("@cssfn/cssfn").StyleCollection;
 export declare const usesThemeDefault: (themeName?: ThemeName | null) => import("@cssfn/cssfn").StyleCollection;
@@ -90,7 +92,7 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     menuWhiteSpace: string;
     menuTextAlign: string;
 }>, cssConfig: import("@cssfn/css-config").CssConfigSettings;
-export interface NavbarMenuProps extends ButtonProps {
+export interface NavbarMenuProps extends NavButtonProps {
 }
 export declare function NavbarMenu(props: NavbarMenuProps): JSX.Element;
 export type { NavbarMenuProps as MenuProps };

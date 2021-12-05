@@ -44,9 +44,10 @@ import {
 usesContainerLayout, usesContainerVariants, 
 // configs:
 cssProps as ccssProps, } from '@nodestrap/container';
-import { Button, } from '@nodestrap/button';
+import { useCurrentActive, NavButton, } from '@nodestrap/nav-button';
 import { Check, } from '@nodestrap/check';
 import TogglerMenuButton from '@nodestrap/toggler-menu-button';
+export { useCurrentActive };
 // hooks:
 // states:
 //#region activePassive
@@ -649,14 +650,10 @@ export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
     };
 }, { prefix: 'navb' });
 export function NavbarMenu(props) {
-    // fn props:
-    const pressFn = props.press ?? props.active;
     // jsx:
-    return (React.createElement(Button
+    return (React.createElement(NavButton
     // other props:
     , { ...props, 
-        // accessibilities:
-        press: pressFn, 
         // variants:
         mild: props.mild ?? false, 
         // classes:
