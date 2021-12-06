@@ -1154,7 +1154,7 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
         /* always close the menu even if `defaultPrevented` */
         if (isActive) {
             setActive(false);
-            e.preventDefault();
+            // e.preventDefault(); // do not `preventDefault()`, causing <Link> ignore the click => no client side navigation
         } // if
     };
     
