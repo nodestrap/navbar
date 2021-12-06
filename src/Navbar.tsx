@@ -1151,11 +1151,10 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
     };
     // watch [click] on the NavbarMenu:
     const handleClick : React.MouseEventHandler<HTMLButtonElement> = (e) => {
-        if (!e.defaultPrevented) {
-            if (isActive) {
-                setActive(false);
-                e.preventDefault();
-            } // if
+        /* always close the menu even if `defaultPrevented` */
+        if (isActive) {
+            setActive(false);
+            e.preventDefault();
         } // if
     };
     
