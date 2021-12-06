@@ -1139,6 +1139,28 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
     
     
     
+    // handlers:
+    // watch [escape key] on the whole navbar, including menus & toggler:
+    const handleKeyUp : React.KeyboardEventHandler<TElement> = (e) => {
+        if (!e.defaultPrevented) {
+            if (isActive && ((e.key === 'Escape') || (e.code === 'Escape'))) {
+                setActive(false);
+                e.preventDefault();
+            } // if
+        } // if
+    };
+    // watch [click] on the NavbarMenu:
+    const handleClick : React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        if (!e.defaultPrevented) {
+            if (isActive) {
+                setActive(false);
+                e.preventDefault();
+            } // if
+        } // if
+    };
+    
+    
+    
     // jsx:
     return (
         <Indicator<TElement>
@@ -1174,18 +1196,10 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
             
             
             // events:
-            // watch [escape key] on the whole navbar, including menus & toggler:
             onKeyUp={(e) => {
                 props.onKeyUp?.(e);
                 
-                
-                
-                if (!e.defaultPrevented) {
-                    if (isActive && ((e.key === 'Escape') || (e.code === 'Escape'))) {
-                        setActive(false);
-                        e.preventDefault();
-                    } // if
-                } // if
+                handleKeyUp(e);
             }}
         >
             { logoFn }
@@ -1218,11 +1232,23 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
                         
                         // essentials:
                         key={child.key ?? index}
+                        
+                        
+                        // events:
+                        onClick={(e) => {
+                            child.props.onClick?.(e);
+                            
+                            handleClick(e);
+                        }}
                     />
                     :
                     <NavbarMenu
                         // essentials:
                         key={index}
+                        
+                        
+                        // events:
+                        onClick={handleClick}
                     >
                         { child }
                     </NavbarMenu>

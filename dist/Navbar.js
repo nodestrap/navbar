@@ -731,6 +731,25 @@ export function Navbar(props) {
             // classes:
             className: 'toggler wrapper' }, toggler));
     })();
+    // handlers:
+    // watch [escape key] on the whole navbar, including menus & toggler:
+    const handleKeyUp = (e) => {
+        if (!e.defaultPrevented) {
+            if (isActive && ((e.key === 'Escape') || (e.code === 'Escape'))) {
+                setActive(false);
+                e.preventDefault();
+            } // if
+        } // if
+    };
+    // watch [click] on the NavbarMenu:
+    const handleClick = (e) => {
+        if (!e.defaultPrevented) {
+            if (isActive) {
+                setActive(false);
+                e.preventDefault();
+            } // if
+        } // if
+    };
     // jsx:
     return (React.createElement(Indicator, { ...restProps, 
         // semantics:
@@ -749,15 +768,9 @@ export function Navbar(props) {
             compactState.class,
         ], 
         // events:
-        // watch [escape key] on the whole navbar, including menus & toggler:
         onKeyUp: (e) => {
             props.onKeyUp?.(e);
-            if (!e.defaultPrevented) {
-                if (isActive && ((e.key === 'Escape') || (e.code === 'Escape'))) {
-                    setActive(false);
-                    e.preventDefault();
-                } // if
-            } // if
+            handleKeyUp(e);
         } },
         logoFn,
         togglerFn,
@@ -781,12 +794,19 @@ export function Navbar(props) {
                 // other props:
                 , { ...child.props, 
                     // essentials:
-                    key: child.key ?? index })
+                    key: child.key ?? index, 
+                    // events:
+                    onClick: (e) => {
+                        child.props.onClick?.(e);
+                        handleClick(e);
+                    } })
             :
                 React.createElement(NavbarMenu
                 // essentials:
                 , { 
                     // essentials:
-                    key: index }, child))))));
+                    key: index, 
+                    // events:
+                    onClick: handleClick }, child))))));
 }
 export { Navbar as default };
