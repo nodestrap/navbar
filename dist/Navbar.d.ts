@@ -40,6 +40,7 @@ export declare const useNavbarSheet: import("@cssfn/types").Factory<import("jss"
 export declare const cssProps: import("@cssfn/css-config").Refs<{
     zIndex: number;
     position: string;
+    insetBlockStart: string;
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;
@@ -58,6 +59,7 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
 }>, cssDecls: import("@cssfn/css-config").Decls<{
     zIndex: number;
     position: string;
+    insetBlockStart: string;
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;
@@ -76,6 +78,7 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
 }>, cssVals: import("@cssfn/css-config").Vals<{
     zIndex: number;
     position: string;
+    insetBlockStart: string;
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;

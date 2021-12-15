@@ -868,7 +868,7 @@ export const useNavbarSheet = createUseSheet(() => [
             usesNavbarStates(),
         ]),
     ]),
-]);
+], /*sheetId :*/'xf4hlnf0au'); // an unique salt for SSR support, ensures the server-side & client-side have the same generated class names
 
 
 
@@ -902,6 +902,7 @@ export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
         //#region positions
         zIndex                    : 1020,
         position                  : 'sticky',
+        insetBlockStart           : '0px',
         //#endregion positions
         
         
