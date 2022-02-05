@@ -5,10 +5,10 @@ import { TogglerActiveProps, IndicatorProps } from '@nodestrap/indicator';
 import { CurrentActiveProps, useCurrentActive, NavButtonProps } from '@nodestrap/nav-button';
 export type { CurrentActiveProps };
 export { useCurrentActive };
-export declare const markActive: () => import("@cssfn/cssfn").StyleCollection;
-export declare const dontMarkActive: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesThemeDefault: (themeName?: ThemeName | null) => import("@cssfn/cssfn").StyleCollection;
-export declare const usesThemeActive: (themeName?: ThemeName | null) => import("@cssfn/cssfn").StyleCollection;
+export declare const markActive: () => import("@cssfn/cssfn").Rule;
+export declare const dontMarkActive: () => import("@cssfn/cssfn").Rule;
+export declare const usesThemeDefault: (themeName?: ThemeName | null) => import("@cssfn/cssfn").Rule;
+export declare const usesThemeActive: (themeName?: ThemeName | null) => import("@cssfn/cssfn").Rule;
 export interface CompactState {
     compact?: boolean;
 }
@@ -22,20 +22,20 @@ export interface MenusAnimVars {
      */
     anim: any;
 }
-export declare const usesMenusAnim: () => readonly [() => import("@cssfn/cssfn").StyleCollection, import("@cssfn/css-var").ReadonlyRefs<MenusAnimVars>, import("@cssfn/css-var").ReadonlyDecls<MenusAnimVars>];
-export declare const usesWrapperLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesItemLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesSecondaryLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesLogoLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesTogglerLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesMenusLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesMenusCompactLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesMenuLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesMenuVariants: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesMenuStates: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesNavbarLayout: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesNavbarVariants: () => import("@cssfn/cssfn").StyleCollection;
-export declare const usesNavbarStates: () => import("@cssfn/cssfn").StyleCollection;
+export declare const usesMenusAnim: () => readonly [() => import("@cssfn/cssfn").Rule, import("@cssfn/css-var").ReadonlyRefs<MenusAnimVars>, import("@cssfn/css-var").ReadonlyDecls<MenusAnimVars>];
+export declare const usesWrapperLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesItemLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesSecondaryLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesLogoLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesTogglerLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesMenusLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesMenusCompactLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesMenuLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesMenuVariants: () => import("@cssfn/cssfn").Rule;
+export declare const usesMenuStates: () => import("@cssfn/cssfn").Rule;
+export declare const usesNavbarLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesNavbarVariants: () => import("@cssfn/cssfn").Rule;
+export declare const usesNavbarStates: () => import("@cssfn/cssfn").Rule;
 export declare const useNavbarSheet: import("@cssfn/types").Factory<import("jss").Classes<"main">>;
 export declare const cssProps: import("@cssfn/css-config").Refs<{
     zIndex: number;

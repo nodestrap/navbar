@@ -11,23 +11,26 @@ import type {
 }                           from '@cssfn/css-types'   // ts defs support for cssfn
 import {
     // compositions:
-    composition,
     mainComposition,
+    
+    
+    
+    // styles:
+    style,
+    vars,
     imports,
     
     
     
-    // layouts:
-    layout,
-    vars,
-    children,
-    
-    
-    
     // rules:
-    rules,
-    states,
     rule,
+    states,
+    fallbacks,
+    
+    
+    
+    //combinators:
+    children,
 }                           from '@cssfn/cssfn'       // cssfn core
 import {
     // hooks:
@@ -98,7 +101,6 @@ import {
 }                           from '@nodestrap/indicator'
 import {
     // hooks:
-    markActive       as controlMarkActive,
     usesThemeDefault as controlUsesThemeDefault,
     usesThemeActive  as controlUsesThemeActive,
     isFocus,
@@ -156,23 +158,22 @@ export { useCurrentActive }
 // states:
 
 //#region activePassive
-export const markActive = () => composition([
-    imports([
-        controlMarkActive(),
+export const markActive = () => style({
+    ...imports([
+        outlinedOf(null),      // keeps outlined variant
+        mildOf(null),          // keeps mild     variant
         
-        mildOf(null), // keeps mild variant
-        
-        usesThemeActive(), // switch to active theme
+        usesThemeActive(),     // switch to active theme
     ]),
-]);
-export const dontMarkActive = () => composition([
-    imports([
-        outlinedOf(null), // keeps outlined variant
-        mildOf(null),     // keeps mild     variant
+});
+export const dontMarkActive = () => style({
+    ...imports([
+        outlinedOf(null),      // keeps outlined variant
+        mildOf(null),          // keeps mild     variant
         
         usesThemeActive(null), // keeps current theme
     ]),
-]);
+});
 
 // change default parameter from 'secondary' to `null`:
 export const usesThemeDefault = (themeName: ThemeName|null = null) => controlUsesThemeDefault(themeName);
@@ -354,27 +355,27 @@ export const usesMenusAnim = () => {
     
     
     return [
-        () => composition([
-            imports([
+        () => style({
+            ...imports([
                 // animations:
                 anim(),
             ]),
-            vars({
+            ...vars({
                 [menusAnimDecls.anim] : animRefs.animNone,
             }),
-            states([
-                isActivating([
-                    vars({
+            ...states([
+                isActivating({
+                    ...vars({
                         [menusAnimDecls.anim] : cssProps.menusAnimActive,
                     }),
-                ]),
-                isPassivating([
-                    vars({
+                }),
+                isPassivating({
+                    ...vars({
                         [menusAnimDecls.anim] : cssProps.menusAnimPassive,
                     }),
-                ]),
+                }),
             ]),
-        ]),
+        }),
         menusAnimRefs,
         menusAnimDecls,
     ] as const;
@@ -397,12 +398,12 @@ export const usesWrapperLayout = () => {
     
     
     
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // spacings:
             paddings(),
         ]),
-        layout({
+        ...style({
             // layouts:
             display        : 'flex',   // use block flexbox, so it takes the entire parent's width
             flexDirection  : 'row',    // the flex direction to horz, so we can adjust the content's height
@@ -415,15 +416,13 @@ export const usesWrapperLayout = () => {
             // spacings:
             ...expandPadding(), // expand padding css vars
         }),
-    ]);
+    });
 };
 export const usesItemLayout = () => {
-    return composition([
-        layout({
-            // customize:
-            ...usesGeneralProps(usesPrefixedProps(cssProps, 'item')), // apply general cssProps starting with item***
-        }),
-    ]);
+    return style({
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'item')), // apply general cssProps starting with item***
+    });
 };
 export const usesSecondaryLayout = () => {
     // dependencies:
@@ -433,45 +432,39 @@ export const usesSecondaryLayout = () => {
     
     
     
-    return composition([
-        layout({
-            // layouts:
-            justifySelf    : 'center', // center self horizontally
-            alignSelf      : 'center', // center self vertically
-            
-            
-            
-            // spacings:
-            [paddingDecls.paddingInline] : '0px', // discard padding
-            [paddingDecls.paddingBlock ] : '0px', // discard padding
-        }),
-    ]);
+    return style({
+        // layouts:
+        justifySelf    : 'center', // center self horizontally
+        alignSelf      : 'center', // center self vertically
+        
+        
+        
+        // spacings:
+        [paddingDecls.paddingInline] : '0px', // discard padding
+        [paddingDecls.paddingBlock ] : '0px', // discard padding
+    });
 };
 export const usesLogoLayout = () => {
-    return composition([
-        layout({
-            // layouts:
-            gridArea       : '1 / -3', // place at the same `menus`' row / place at the 3rd column from the right (negative columns are placed after all positive ones was placed)
-            
-            
-            
-            // customize:
-            ...usesGeneralProps(usesPrefixedProps(cssProps, 'logo')), // apply general cssProps starting with logo***
-        }),
-    ]);
+    return style({
+        // layouts:
+        gridArea       : '1 / -3', // place at the same `menus`' row / place at the 3rd column from the right (negative columns are placed after all positive ones was placed)
+        
+        
+        
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'logo')), // apply general cssProps starting with logo***
+    });
 };
 export const usesTogglerLayout = () => {
-    return composition([
-        layout({
-            // layouts:
-            gridArea       : '1 / 2', // place at the same `menus`' row / place at the 2nd column from the left
-            
-            
-            
-            // customize:
-            ...usesGeneralProps(usesPrefixedProps(cssProps, 'toggler')), // apply general cssProps starting with toggler***
-        }),
-    ]);
+    return style({
+        // layouts:
+        gridArea       : '1 / 2', // place at the same `menus`' row / place at the 2nd column from the left
+        
+        
+        
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'toggler')), // apply general cssProps starting with toggler***
+    });
 };
 
 export const usesMenusLayout = () => {
@@ -482,66 +475,67 @@ export const usesMenusLayout = () => {
     
     
     
-    return composition([
-        layout({
-            // layouts:
-            gridArea       : 'menus',   // place at the defined `menus` area
-            display        : 'flex',    // use flexbox to place the menus sequentially
-            flexDirection  : 'row',     // menus are stacked horizontally according to the document's writing flow
-            justifyContent : 'end',     // if menus are not growable, the excess space (if any) placed at the front, and if no sufficient space available => the last menu should be visible first
-            alignItems     : 'stretch', // menus height are follow the tallest one
-            flexWrap       : 'nowrap',  // no wrapping
-            
-            
-            
-            // animations:
-            anim           : menusAnimRefs.anim,
-            
-            
-            
-            // children:
-            ...children('*', [ // menu section
-                imports([
-                    usesMenuLayout(),
-                    usesMenuVariants(),
-                    usesMenuStates(),
-                ]),
+    return style({
+        // layouts:
+        gridArea       : 'menus',   // place at the defined `menus` area
+        display        : 'flex',    // use flexbox to place the menus sequentially
+        flexDirection  : 'row',     // menus are stacked horizontally according to the document's writing flow
+        justifyContent : 'end',     // if menus are not growable, the excess space (if any) placed at the front, and if no sufficient space available => the last menu should be visible first
+        alignItems     : 'stretch', // menus height are follow the tallest one
+        flexWrap       : 'nowrap',  // no wrapping
+        
+        
+        
+        // animations:
+        anim           : menusAnimRefs.anim,
+        
+        
+        
+        // children:
+        ...children('*', { // menu section
+            ...imports([
+                // layouts:
+                usesMenuLayout(),
+                
+                // variants:
+                usesMenuVariants(),
+                
+                // states:
+                usesMenuStates(),
             ]),
-            
-            
-            
-            // customize:
-            ...usesGeneralProps(usesPrefixedProps(cssProps, 'menus')), // apply general cssProps starting with menus***
         }),
-    ]);
+        
+        
+        
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'menus')), // apply general cssProps starting with menus***
+    });
 };
 export const usesMenusCompactLayout = () => {
-    return composition([
-        layout({
-            // layouts:
-            gridArea       : '-1 / -3 / -1 / 3', // place at the 1st column from the bottom / place start from the 3rd column from the right to 3rd column from the left (negative columns are placed after all positive ones was placed)
-            flexDirection  : 'column',  // place the menus vertically
-            
-            
-            
-            // backgrounds:
-            backg          : 'inherit', // supports for floating menus's background
-            
-            
-            
-            // borders:
-            borderBlock    : 'inherit', // supports for floating menus's border
-            
-            
-            
-            // sizes:
-            // supports for floating menus, fills the entire page's width
-            inlineSize     : 'fill-available',
-            fallbacks      : {
-                inlineSize : '-moz-available',
-            },
+    return style({
+        // layouts:
+        gridArea       : '-1 / -3 / -1 / 3', // place at the 1st column from the bottom / place start from the 3rd column from the right to 3rd column from the left (negative columns are placed after all positive ones was placed)
+        flexDirection  : 'column',  // place the menus vertically
+        
+        
+        
+        // backgrounds:
+        backg          : 'inherit', // supports for floating menus's background
+        
+        
+        
+        // borders:
+        borderBlock    : 'inherit', // supports for floating menus's border
+        
+        
+        
+        // sizes:
+        // supports for floating menus, fills the entire page's width
+        inlineSize     : 'fill-available',
+        ...fallbacks({
+            inlineSize : '-moz-available',
         }),
-    ]);
+    });
 };
 
 export const usesMenuLayout = () => {
@@ -553,8 +547,8 @@ export const usesMenuLayout = () => {
     
     
     
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // layouts:
             usesActionControlLayout(),
             usesWrapperLayout(),
@@ -562,7 +556,7 @@ export const usesMenuLayout = () => {
             // colors:
             usesThemeDefault(),
         ]),
-        layout({
+        ...style({
             // borders:
             [borderStrokeDecls.borderWidth           ] : '0px', // discard border
             // remove rounded corners on top:
@@ -582,54 +576,54 @@ export const usesMenuLayout = () => {
             // customize:
             ...usesGeneralProps(usesPrefixedProps(cssProps, 'menu')), // apply general cssProps starting with menu***
         }),
-    ]);
+    });
 };
 export const usesMenuVariants = () => {
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // variants:
             usesActionControlVariants(),
         ]),
-    ]);
+    });
 };
 export const usesMenuStates = () => {
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // states:
             usesActionControlStates(),
         ]),
-        states([
-            isActive([
-                imports([
+        ...states([
+            isActive({
+                ...imports([
                     markActive(),
                 ]),
-            ]),
-            isFocus([
-                imports([
+            }),
+            isFocus({
+                ...imports([
                     dontMarkActive(),
                 ]),
-            ]),
-            isArrive([
-                imports([
+            }),
+            isArrive({
+                ...imports([
                     dontMarkActive(),
                 ]),
-            ]),
-            isPress([
-                imports([
+            }),
+            isPress({
+                ...imports([
                     dontMarkActive(),
                 ]),
-            ]),
+            }),
         ]),
-    ]);
+    });
 };
 
 export const usesNavbarLayout = () => {
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // layouts:
             usesContainerLayout(),
         ]),
-        layout({
+        ...style({
             // layouts:
             display             : 'grid', // use css grid for layouting, so we can customize the desired area later.
             
@@ -657,36 +651,36 @@ export const usesNavbarLayout = () => {
             
             
             // children:
-            ...children(wrapperElm, [ // wrapper elements
-                imports([
+            ...children(wrapperElm, { // wrapper elements
+                ...imports([
                     usesWrapperLayout(),
                 ]),
-            ]),
-            ...children([logoElm, togglerElm, menusElm], [ // all sections
-                imports([
+            }),
+            ...children([logoElm, togglerElm, menusElm], { // all sections
+                ...imports([
                     usesItemLayout(),
                 ]),
-            ]),
-            ...children([logoElm, togglerElm], [ // secondary sections
-                imports([
+            }),
+            ...children([logoElm, togglerElm], { // secondary sections
+                ...imports([
                     usesSecondaryLayout(),
                 ]),
-            ]),
-            ...children(logoElm, [ // logo section
-                imports([
+            }),
+            ...children(logoElm, { // logo section
+                ...imports([
                     usesLogoLayout(),
                 ]),
-            ]),
-            ...children(togglerElm, [ // toggler section
-                imports([
+            }),
+            ...children(togglerElm, { // toggler section
+                ...imports([
                     usesTogglerLayout(),
                 ]),
-            ]),
-            ...children(menusElm, [ // menus section
-                imports([
+            }),
+            ...children(menusElm, { // menus section
+                ...imports([
                     usesMenusLayout(),
                 ]),
-            ]),
+            }),
             
             
             
@@ -703,30 +697,28 @@ export const usesNavbarLayout = () => {
             // spacings:
             ...expandPadding(cssProps), // expand padding css vars
         }),
-    ]);
+    });
 };
 export const usesNavbarVariants = () => {
     // dependencies:
     
     // layouts:
-    const [sizes] = usesSizeVariant((sizeName) => composition([
-        layout({
-            // overwrites propName = propName{SizeName}:
-            ...overwriteProps(cssDecls, usesSuffixedProps(cssProps, sizeName)),
-        }),
-    ]));
+    const [sizes] = usesSizeVariant((sizeName) => style({
+        // overwrites propName = propName{SizeName}:
+        ...overwriteProps(cssDecls, usesSuffixedProps(cssProps, sizeName)),
+    }));
     
     
     
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // variants:
             usesContainerVariants(),
             
             // layouts:
             sizes(),
         ]),
-    ]);
+    });
 };
 export const usesNavbarStates = () => {
     // dependencies:
@@ -736,127 +728,101 @@ export const usesNavbarStates = () => {
     
     
     
-    return composition([
-        imports([
+    return style({
+        ...imports([
             // animations:
             menusAnim(),
         ]),
-        states([
-            rule(':not(.compact)', [ // full
-                layout({
-                    // children:
-                    ...children([logoElm, togglerElm, menusElm], [ // all sections
-                        layout({
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'item'), 'full')), // apply general cssProps starting with item*** and ending with ***Full
-                        }),
-                    ]),
-                    ...children(logoElm, [ // logo section
-                        layout({
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'logo'), 'full')), // apply general cssProps starting with logo*** and ending with ***Full
-                        }),
-                    ]),
-                    ...children(togglerElm, [ // toggler section
-                        layout({
-                            // appearances:
-                            display: 'none', // hides toggler on full mode
-                            
-                            
-                            
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'toggler'), 'full')), // apply general cssProps starting with toggler*** and ending with ***Full
-                        }),
-                    ]),
-                    ...children(menusElm, [ // menus section
-                        layout({
-                            // children:
-                            ...children('*', [ // menu section
-                                layout({
-                                    // customize:
-                                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'full')), // apply general cssProps starting with menu*** and ending with ***Full
-                                }),
-                            ]),
-                            
-                            
-                            
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'full')), // apply general cssProps starting with menus*** and ending with ***Full
-                        }),
-                    ]),
+        ...states([
+            rule(':not(.compact)', { // full
+                // children:
+                ...children([logoElm, togglerElm, menusElm], { // all sections
+                    // customize:
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'item'), 'full')), // apply general cssProps starting with item*** and ending with ***Full
+                }),
+                ...children(logoElm, { // logo section
+                    // customize:
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'logo'), 'full')), // apply general cssProps starting with logo*** and ending with ***Full
+                }),
+                ...children(togglerElm, { // toggler section
+                    // appearances:
+                    display: 'none', // hides toggler on full mode
                     
                     
                     
                     // customize:
-                    ...usesGeneralProps(usesSuffixedProps(cssProps, 'full')), // apply general cssProps ending with ***Full
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'toggler'), 'full')), // apply general cssProps starting with toggler*** and ending with ***Full
                 }),
-            ]),
-            rule('.compact', [ // compact
-                layout({
+                ...children(menusElm, { // menus section
                     // children:
-                    ...children([logoElm, togglerElm, menusElm], [ // all sections
-                        layout({
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'item'), 'compact')), // apply general cssProps starting with item*** and ending with ***Compact
-                        }),
-                    ]),
-                    ...children(logoElm, [ // logo section
-                        layout({
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'logo'), 'compact')), // apply general cssProps starting with logo*** and ending with ***Compact
-                        }),
-                    ]),
-                    ...children(togglerElm, [ // toggler section
-                        layout({
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'toggler'), 'compact')), // apply general cssProps starting with toggler*** and ending with ***Compact
-                        }),
-                    ]),
-                    ...children(menusElm, [ // menus section
-                        imports([
-                            usesMenusCompactLayout(),
-                        ]),
-                        layout({
-                            // children:
-                            ...children('*', [ // menu section
-                                layout({
-                                    // customize:
-                                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'compact')), // apply general cssProps starting with menu*** and ending with ***Compact
-                                }),
-                            ]),
-                            
-                            
-                            
-                            // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'compact')), // apply general cssProps starting with menus*** and ending with ***Compact
-                        }),
-                    ]),
+                    ...children('*', { // menu section
+                        // customize:
+                        ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'full')), // apply general cssProps starting with menu*** and ending with ***Full
+                    }),
                     
                     
                     
                     // customize:
-                    ...usesGeneralProps(usesSuffixedProps(cssProps, 'compact')), // apply general cssProps ending with ***Compact
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'full')), // apply general cssProps starting with menus*** and ending with ***Full
                 }),
-                rules([
-                    isPassived([
-                        layout({
-                            // children:
-                            ...children(menusElm, [ // menus section
-                                layout({
-                                    // layouts:
-                                    display: 'none', // hide the menus when on compact mode
-                                }),
-                            ]),
-                        }),
+                
+                
+                
+                // customize:
+                ...usesGeneralProps(usesSuffixedProps(cssProps, 'full')), // apply general cssProps ending with ***Full
+            }),
+            rule('.compact', { // compact
+                // children:
+                ...children([logoElm, togglerElm, menusElm], { // all sections
+                    // customize:
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'item'), 'compact')), // apply general cssProps starting with item*** and ending with ***Compact
+                }),
+                ...children(logoElm, { // logo section
+                    // customize:
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'logo'), 'compact')), // apply general cssProps starting with logo*** and ending with ***Compact
+                }),
+                ...children(togglerElm, { // toggler section
+                    // customize:
+                    ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'toggler'), 'compact')), // apply general cssProps starting with toggler*** and ending with ***Compact
+                }),
+                ...children(menusElm, { // menus section
+                    ...imports([
+                        usesMenusCompactLayout(),
                     ]),
+                    ...style({
+                        // children:
+                        ...children('*', { // menu section
+                            // customize:
+                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'compact')), // apply general cssProps starting with menu*** and ending with ***Compact
+                        }),
+                        
+                        
+                        
+                        // customize:
+                        ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'compact')), // apply general cssProps starting with menus*** and ending with ***Compact
+                    }),
+                }),
+                ...states([
+                    isPassived({
+                        // children:
+                        ...children(menusElm, { // menus section
+                            // layouts:
+                            display: 'none', // hide the menus when on compact mode
+                        }),
+                    }),
                 ]),
-            ]),
+                
+                
+                
+                // customize:
+                ...usesGeneralProps(usesSuffixedProps(cssProps, 'compact')), // apply general cssProps ending with ***Compact
+            }),
         ]),
-    ]);
+    });
 };
 
 export const useNavbarSheet = createUseSheet(() => [
-    mainComposition([
+    mainComposition(
         imports([
             // layouts:
             usesNavbarLayout(),
@@ -867,7 +833,7 @@ export const useNavbarSheet = createUseSheet(() => [
             // states:
             usesNavbarStates(),
         ]),
-    ]),
+    ),
 ], /*sheetId :*/'xf4hlnf0au'); // an unique salt for SSR support, ensures the server-side & client-side have the same generated class names
 
 
