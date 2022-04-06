@@ -1,28 +1,6 @@
 import { default as React } from 'react';
-import type { PropEx } from '@cssfn/css-types';
-import { ThemeName } from '@nodestrap/basic';
+import type { ElementProps } from '@nodestrap/element';
 import { TogglerActiveProps, IndicatorProps } from '@nodestrap/indicator';
-import { CurrentActiveProps, useCurrentActive, NavButtonProps } from '@nodestrap/nav-button';
-export type { CurrentActiveProps };
-export { useCurrentActive };
-export declare const markActive: () => import("@cssfn/cssfn").Rule;
-export declare const dontMarkActive: () => import("@cssfn/cssfn").Rule;
-export declare const usesThemeDefault: (themeName?: ThemeName | null) => import("@cssfn/cssfn").Rule;
-export declare const usesThemeActive: (themeName?: ThemeName | null) => import("@cssfn/cssfn").Rule;
-export interface CompactState {
-    compact?: boolean;
-}
-export declare const useCompactState: <TElement extends HTMLElement = HTMLElement>(props: CompactState, navbarRef: React.RefObject<TElement>) => {
-    compact: boolean;
-    class: string | null;
-};
-export interface MenusAnimVars {
-    /**
-     * final animation for the menus.
-     */
-    anim: any;
-}
-export declare const usesMenusAnim: () => readonly [() => import("@cssfn/cssfn").Rule, import("@cssfn/css-var").ReadonlyRefs<MenusAnimVars>, import("@cssfn/css-var").ReadonlyDecls<MenusAnimVars>];
 export declare const usesWrapperLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesItemLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesSecondaryLayout: () => import("@cssfn/cssfn").Rule;
@@ -30,9 +8,8 @@ export declare const usesLogoLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesTogglerLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesMenusLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesMenusCompactLayout: () => import("@cssfn/cssfn").Rule;
+export declare const usesListLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesMenuLayout: () => import("@cssfn/cssfn").Rule;
-export declare const usesMenuVariants: () => import("@cssfn/cssfn").Rule;
-export declare const usesMenuStates: () => import("@cssfn/cssfn").Rule;
 export declare const usesNavbarLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesNavbarVariants: () => import("@cssfn/cssfn").Rule;
 export declare const usesNavbarStates: () => import("@cssfn/cssfn").Rule;
@@ -41,6 +18,7 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     zIndex: number;
     position: string;
     insetBlockStart: string;
+    boxShadow: (string | number)[][];
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;
@@ -48,18 +26,20 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
-    '@keyframes menusActive': PropEx.Keyframes;
-    '@keyframes menusPassive': PropEx.Keyframes;
-    menusAnimActive: (string | PropEx.Keyframes)[][];
-    menusAnimPassive: (string | PropEx.Keyframes)[][];
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
+    listJustifySelfFull: string;
+    menuDisplay: string;
+    menuFlexDirection: string;
+    menuJustifyContent: string;
+    menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
 }>, cssDecls: import("@cssfn/css-config").Decls<{
     zIndex: number;
     position: string;
     insetBlockStart: string;
+    boxShadow: (string | number)[][];
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;
@@ -67,18 +47,20 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
-    '@keyframes menusActive': PropEx.Keyframes;
-    '@keyframes menusPassive': PropEx.Keyframes;
-    menusAnimActive: (string | PropEx.Keyframes)[][];
-    menusAnimPassive: (string | PropEx.Keyframes)[][];
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
+    listJustifySelfFull: string;
+    menuDisplay: string;
+    menuFlexDirection: string;
+    menuJustifyContent: string;
+    menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
 }>, cssVals: import("@cssfn/css-config").Vals<{
     zIndex: number;
     position: string;
     insetBlockStart: string;
+    boxShadow: (string | number)[][];
     borderInline: string;
     borderBlockStart: string;
     borderRadius: number;
@@ -86,24 +68,21 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
-    '@keyframes menusActive': PropEx.Keyframes;
-    '@keyframes menusPassive': PropEx.Keyframes;
-    menusAnimActive: (string | PropEx.Keyframes)[][];
-    menusAnimPassive: (string | PropEx.Keyframes)[][];
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
+    listJustifySelfFull: string;
+    menuDisplay: string;
+    menuFlexDirection: string;
+    menuJustifyContent: string;
+    menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
 }>, cssConfig: import("@cssfn/css-config").CssConfigSettings;
-export interface NavbarMenuProps extends NavButtonProps {
-}
-export declare function NavbarMenu(props: NavbarMenuProps): JSX.Element;
-export type { NavbarMenuProps as MenuProps };
-export { NavbarMenu as Menu };
-export interface NavbarProps<TElement extends HTMLElement = HTMLElement> extends IndicatorProps<TElement>, TogglerActiveProps, CompactState {
-    logo?: React.ReactChild | boolean | null;
-    toggler?: React.ReactChild | boolean | null;
-    children?: React.ReactNode;
+export interface NavbarProps<TElement extends HTMLElement = HTMLElement> extends Omit<IndicatorProps<TElement>, 'enabled'>, Omit<TogglerActiveProps, 'enabled'> {
+    compact?: boolean;
+    logo?: React.ReactComponentElement<any, ElementProps> | boolean;
+    toggler?: React.ReactComponentElement<any, ElementProps> | boolean;
+    children?: ((compact: boolean) => React.ReactNode);
 }
 export declare function Navbar<TElement extends HTMLElement = HTMLElement>(props: NavbarProps<TElement>): JSX.Element;
 export { Navbar as default };

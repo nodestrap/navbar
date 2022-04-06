@@ -1,10 +1,11 @@
 // react:
-import { default as React, useState, useRef, } from 'react'; // base technology of our nodestrap components
+import { default as React, useRef, useState, useCallback, } from 'react'; // base technology of our nodestrap components
+// cssfn:
 import { 
 // compositions:
 mainComposition, 
 // styles:
-style, vars, imports, 
+style, imports, 
 // rules:
 rule, states, fallbacks, 
 //combinators:
@@ -12,198 +13,43 @@ children, } from '@cssfn/cssfn'; // cssfn core
 import { 
 // hooks:
 createUseSheet, } from '@cssfn/react-cssfn'; // cssfn for react
-import { createCssVar, } from '@cssfn/css-var'; // Declares & retrieves *css variables* (css custom properties).
 import { createCssConfig, 
 // utilities:
 usesGeneralProps, usesPrefixedProps, usesSuffixedProps, overwriteProps, } from '@cssfn/css-config'; // Stores & retrieves configuration using *css custom properties* (css variables)
 // nodestrap utilities:
-import { useIsomorphicLayoutEffect, } from '@nodestrap/hooks';
 import { 
 // utilities:
-isTypeOf, setRef, } from '@nodestrap/utilities';
-// nodestrap components:
-import { 
-// react components:
-Element, } from '@nodestrap/element';
+isOverflowed, 
+// hooks:
+useResponsive, } from '@nodestrap/responsive';
 import { 
 // hooks:
-usesSizeVariant, outlinedOf, mildOf, usesBorderStroke, usesBorderRadius, expandBorderRadius, usesPadding, expandPadding, usesAnim, 
+useIsomorphicLayoutEffect, useTriggerRender, } from '@nodestrap/hooks';
+import { 
+// utilities:
+setRef, } from '@nodestrap/utilities';
+import { 
+// hooks:
+usesSizeVariant, expandBorderRadius, usesPadding, expandPadding, 
 // configs:
 cssProps as bcssProps, } from '@nodestrap/basic';
-import { 
-// hooks:
-isActivating, isPassivating, isPassived, isActive, useTogglerActive, Indicator, } from '@nodestrap/indicator';
-import { 
-// hooks:
-usesThemeDefault as controlUsesThemeDefault, usesThemeActive as controlUsesThemeActive, isFocus, isArrive, } from '@nodestrap/control';
-import { 
-// hooks:
-isPress, 
-// styles:
-usesActionControlLayout, usesActionControlVariants, usesActionControlStates, } from '@nodestrap/action-control';
+import { useTogglerActive, Indicator, } from '@nodestrap/indicator';
 import { 
 // styles:
 usesContainerLayout, usesContainerVariants, 
 // configs:
 cssProps as ccssProps, } from '@nodestrap/container';
-import { useCurrentActive, NavButton, } from '@nodestrap/nav-button';
-import { Check, } from '@nodestrap/check';
-import TogglerMenuButton from '@nodestrap/toggler-menu-button';
-export { useCurrentActive };
-// hooks:
-// states:
-//#region activePassive
-export const markActive = () => style({
-    ...imports([
-        outlinedOf(null),
-        mildOf(null),
-        usesThemeActive(), // switch to active theme
-    ]),
-});
-export const dontMarkActive = () => style({
-    ...imports([
-        outlinedOf(null),
-        mildOf(null),
-        usesThemeActive(null), // keeps current theme
-    ]),
-});
-// change default parameter from 'secondary' to `null`:
-export const usesThemeDefault = (themeName = null) => controlUsesThemeDefault(themeName);
-// change default parameter from 'primary' to 'secondary':
-export const usesThemeActive = (themeName = 'secondary') => controlUsesThemeActive(themeName);
-export const useCompactState = (props, navbarRef) => {
-    // states:
-    const [compactDn, setCompactDn] = useState(false); // uncontrollable (dynamic) state: true => compact mode, false => full mode
-    /*
-     * state is compact/full based on [controllable compact] (if set) and fallback to [uncontrollable compact]
-     */
-    const compactFn = props.compact /*controllable*/ ?? compactDn /*uncontrollable*/;
-    useIsomorphicLayoutEffect(() => {
-        const navbar = navbarRef.current;
-        if (!navbar)
-            return; // navbar was unloaded => nothing to do
-        if (props.compact !== undefined)
-            return; // controllable [compact] is set => no uncontrollable required
-        // functions:
-        const handleUpdate = async () => {
-            // prepare the condition for dom measurement:
-            const classList = navbar.classList;
-            const hasCompact = classList.contains('compact');
-            if (hasCompact) {
-                // turn off ResizeObserver (to avoid triggering `ResizeObserver event` => firing `handleUpdate()`):
-                turnOffResizeObserver();
-                classList.remove('compact'); // kill compact mode, so we can measure the menu's overflows
-            } // if
-            // measuring the menu's overflows:
-            const { scrollWidth, clientWidth, scrollHeight, clientHeight, } = navbar;
-            // restore to original condition as before measurement:
-            if (hasCompact) {
-                classList.add('compact'); // <== warning: causing to trigger `ResizeObserver event` at the next event loop
-                // turn on ResizeObserver soon (to avoid triggering `ResizeObserver event` => firing `handleUpdate()`):
-                setTimeout(() => {
-                    turnOnResizeObserver();
-                }, 0);
-            } // if
-            // update the dynamic compact mode based on the measured menu's overflows:
-            setCompactDn((scrollWidth > clientWidth)
-                ||
-                    (scrollHeight > clientHeight));
-        };
-        // setups:
-        // update for the first time:
-        handleUpdate();
-        //#region update in the future
-        //#region when navbar / navbar's items resized
-        let initialResizeEvent = null;
-        const resizeObserver = ResizeObserver ? new ResizeObserver(async (entries) => {
-            // ignores the insertion dom event:
-            if (initialResizeEvent) {
-                initialResizeEvent = false;
-                return;
-            } // if
-            // ignores the removal dom event:
-            let items = entries.map((e) => e.target).filter((item) => {
-                if (navbar.parentElement) { // navbar is still exist on the document
-                    // check if the item is navbar itself or the child of navbar
-                    if ((item === navbar) || (item.parentElement === navbar))
-                        return true; // confirmed
-                } // if
-                resizeObserver?.unobserve(item); // no longer exist => remove from observer
-                return false; // not the child of navbar
-            });
-            if (!items.length)
-                return; // no existing items => nothing to do
-            // ignores resizing by animations:
-            items = items.filter((item) => (item.getAnimations().length === 0));
-            if (!items.length)
-                return; // no non_animating items => nothing to do
-            // update after being resized:
-            await handleUpdate();
-        }) : null;
-        const resizeObserverItems = [navbar, ...Array.from(navbar.children)];
-        const turnOnResizeObserver = () => {
-            if (resizeObserver && (initialResizeEvent === null)) {
-                resizeObserverItems.forEach((item) => {
-                    // update in the future:
-                    initialResizeEvent = true; // prevent the insertion dom event
-                    resizeObserver.observe(item, { box: 'border-box' });
-                });
-            } // if
-        };
-        const turnOffResizeObserver = () => {
-            initialResizeEvent = null;
-            resizeObserver?.disconnect();
-        };
-        turnOnResizeObserver();
-        //#endregion when navbar / navbar's items resized
-        //#endregion update in the future
-        // cleanups:
-        return () => {
-            resizeObserver?.disconnect();
-        };
-    }, [props.compact, navbarRef]); // (re)run the setups & cleanups on every time the `props.compact` changes
-    return {
-        compact: compactFn,
-        class: compactFn ? 'compact' : null,
-    };
-};
-const [menusAnimRefs, menusAnimDecls] = createCssVar();
-export const usesMenusAnim = () => {
-    // dependencies:
-    // animations:
-    const [anim, animRefs] = usesAnim();
-    return [
-        () => style({
-            ...imports([
-                // animations:
-                anim(),
-            ]),
-            ...vars({
-                [menusAnimDecls.anim]: animRefs.animNone,
-            }),
-            ...states([
-                isActivating({
-                    ...vars({
-                        [menusAnimDecls.anim]: cssProps.menusAnimActive,
-                    }),
-                }),
-                isPassivating({
-                    ...vars({
-                        [menusAnimDecls.anim]: cssProps.menusAnimPassive,
-                    }),
-                }),
-            ]),
-        }),
-        menusAnimRefs,
-        menusAnimDecls,
-    ];
-};
-//#endregion menus animations
+import { 
+// react components:
+Collapse, } from '@nodestrap/collapse';
+import { TogglerMenuButton, } from '@nodestrap/toggler-menu-button';
 // styles:
 const wrapperElm = '.wrapper';
 const logoElm = '.logo';
 const togglerElm = '.toggler';
-const menusElm = '.menus';
+const menusElm = '.menus'; // .menus
+const listElm = '*'; // ------ > .list
+const menuElm = '*>*'; // -------------- > .wrapper > .listItem
 export const usesWrapperLayout = () => {
     // dependencies:
     // spacings:
@@ -261,28 +107,20 @@ export const usesTogglerLayout = () => {
     });
 };
 export const usesMenusLayout = () => {
-    // dependencies:
-    // animations:
-    const [, menusAnimRefs] = usesMenusAnim();
     return style({
         // layouts:
         gridArea: 'menus',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'end',
-        alignItems: 'stretch',
-        flexWrap: 'nowrap',
-        // animations:
-        anim: menusAnimRefs.anim,
+        display: 'grid',
+        // borders:
+        border: 'none',
+        borderRadius: 0,
+        // spacings:
+        padding: 0,
         // children:
-        ...children('*', {
+        ...children(listElm, {
             ...imports([
                 // layouts:
-                usesMenuLayout(),
-                // variants:
-                usesMenuVariants(),
-                // states:
-                usesMenuStates(),
+                usesListLayout(),
             ]),
         }),
         // customize:
@@ -293,7 +131,6 @@ export const usesMenusCompactLayout = () => {
     return style({
         // layouts:
         gridArea: '-1 / -3 / -1 / 3',
-        flexDirection: 'column',
         // backgrounds:
         backg: 'inherit',
         // borders:
@@ -306,71 +143,25 @@ export const usesMenusCompactLayout = () => {
         }),
     });
 };
-export const usesMenuLayout = () => {
-    // dependencies:
-    // borders:
-    const [, , borderStrokeDecls] = usesBorderStroke();
-    const [, , borderRadiusDecls] = usesBorderRadius();
+export const usesListLayout = () => {
     return style({
-        ...imports([
-            // layouts:
-            usesActionControlLayout(),
-            usesWrapperLayout(),
-            // colors:
-            usesThemeDefault(),
-        ]),
-        ...style({
-            // borders:
-            [borderStrokeDecls.borderWidth]: '0px',
-            // remove rounded corners on top:
-            [borderRadiusDecls.borderStartStartRadius]: '0px',
-            [borderRadiusDecls.borderStartEndRadius]: '0px',
-            // remove rounded corners on bottom:
-            [borderRadiusDecls.borderEndStartRadius]: '0px',
-            [borderRadiusDecls.borderEndEndRadius]: '0px',
-            // sizes:
-            flex: [[0, 1, 'auto']],
-            // customize:
-            ...usesGeneralProps(usesPrefixedProps(cssProps, 'menu')), // apply general cssProps starting with menu***
+        // children:
+        ...children(menuElm, {
+            ...imports([
+                // layouts:
+                usesMenuLayout(),
+            ]),
         }),
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'list')), // apply general cssProps starting with list***
     });
 };
-export const usesMenuVariants = () => {
+export const usesMenuLayout = () => {
     return style({
-        ...imports([
-            // variants:
-            usesActionControlVariants(),
-        ]),
-    });
-};
-export const usesMenuStates = () => {
-    return style({
-        ...imports([
-            // states:
-            usesActionControlStates(),
-        ]),
-        ...states([
-            isActive({
-                ...imports([
-                    markActive(),
-                ]),
-            }),
-            isFocus({
-                ...imports([
-                    dontMarkActive(),
-                ]),
-            }),
-            isArrive({
-                ...imports([
-                    dontMarkActive(),
-                ]),
-            }),
-            isPress({
-                ...imports([
-                    dontMarkActive(),
-                ]),
-            }),
-        ]),
+        // // sizes:
+        // flex : [[0, 1, 'auto']], // ungrowable, shrinkable (if menu allows wrap), initial from it's width
+        // customize:
+        ...usesGeneralProps(usesPrefixedProps(cssProps, 'menu')), // apply general cssProps starting with menu***
     });
 };
 export const usesNavbarLayout = () => {
@@ -457,14 +248,7 @@ export const usesNavbarVariants = () => {
     });
 };
 export const usesNavbarStates = () => {
-    // dependencies:
-    // animations:
-    const [menusAnim] = usesMenusAnim();
     return style({
-        ...imports([
-            // animations:
-            menusAnim(),
-        ]),
         ...states([
             rule(':not(.compact)', {
                 // children:
@@ -484,9 +268,14 @@ export const usesNavbarStates = () => {
                 }),
                 ...children(menusElm, {
                     // children:
-                    ...children('*', {
+                    ...children(listElm, {
+                        // children:
+                        ...children(menuElm, {
+                            // customize:
+                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'full')), // apply general cssProps starting with menu*** and ending with ***Full
+                        }),
                         // customize:
-                        ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'full')), // apply general cssProps starting with menu*** and ending with ***Full
+                        ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'list'), 'full')), // apply general cssProps starting with list*** and ending with ***Full
                     }),
                     // customize:
                     ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'full')), // apply general cssProps starting with menus*** and ending with ***Full
@@ -514,23 +303,18 @@ export const usesNavbarStates = () => {
                     ]),
                     ...style({
                         // children:
-                        ...children('*', {
+                        ...children(listElm, {
+                            ...children(menuElm, {
+                                // customize:
+                                ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'compact')), // apply general cssProps starting with menu*** and ending with ***Compact
+                            }),
                             // customize:
-                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menu'), 'compact')), // apply general cssProps starting with menu*** and ending with ***Compact
+                            ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'list'), 'compact')), // apply general cssProps starting with list*** and ending with ***Compact
                         }),
                         // customize:
                         ...usesGeneralProps(usesSuffixedProps(usesPrefixedProps(cssProps, 'menus'), 'compact')), // apply general cssProps starting with menus*** and ending with ***Compact
                     }),
                 }),
-                ...states([
-                    isPassived({
-                        // children:
-                        ...children(menusElm, {
-                            // layouts:
-                            display: 'none', // hide the menus when on compact mode
-                        }),
-                    }),
-                ]),
                 // customize:
                 ...usesGeneralProps(usesSuffixedProps(cssProps, 'compact')), // apply general cssProps ending with ***Compact
             }),
@@ -549,33 +333,15 @@ export const useNavbarSheet = createUseSheet(() => [
 ], /*sheetId :*/ 'xf4hlnf0au'); // an unique salt for SSR support, ensures the server-side & client-side have the same generated class names
 // configs:
 export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
-    //#region keyframes
-    const keyframesMenusActive = {
-        from: {
-            overflowY: 'hidden',
-            maxBlockSize: 0,
-        },
-        '99%': {
-            overflowY: 'hidden',
-            maxBlockSize: '100vh',
-        },
-        to: {
-            overflowY: 'unset',
-            maxBlockSize: 'unset',
-        },
-    };
-    const keyframesMenusPassive = {
-        from: keyframesMenusActive.to,
-        '1%': keyframesMenusActive['99%'],
-        to: keyframesMenusActive.from,
-    };
-    //#endregion keyframes
     return {
         //#region positions
         zIndex: 1020,
         position: 'sticky',
         insetBlockStart: '0px',
         //#endregion positions
+        //#region backgrounds
+        boxShadow: [[0, 0, '10px', 'rgba(0,0,0,0.5)']],
+        //#endregion backgrounds
         //#region borders
         borderInline: 'none',
         borderBlockStart: 'none',
@@ -587,18 +353,18 @@ export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
         gapInline: bcssProps.paddingInline,
         gapBlock: bcssProps.paddingBlock,
         //#endregion spacings
-        //#region animations
-        '@keyframes menusActive': keyframesMenusActive,
-        '@keyframes menusPassive': keyframesMenusPassive,
-        menusAnimActive: [['300ms', 'ease-out', 'both', keyframesMenusActive]],
-        menusAnimPassive: [['300ms', 'ease-out', 'both', keyframesMenusPassive]],
-        //#endregion animations
         // menus:
         // at full mode, cancel-out Navbar's paddingBlock with negative margin:
         menusMarginBlockFull: [['calc(0px -', bcssProps.paddingBlock, ')']],
         // at compact mode, cancel-out Navbar's paddingInline with negative margin:
         menusMarginInlineCompact: [['calc(0px -', ccssProps.paddingInline, ')']],
+        // list:
+        listJustifySelfFull: 'end',
         // menu:
+        menuDisplay: 'flex',
+        menuFlexDirection: 'column',
+        menuJustifyContent: 'center',
+        menuAlignItems: 'center',
         menuWhiteSpace: 'nowrap',
         menuTextAlign: 'center',
         //#region making menus floating (on mobile), not shifting the content
@@ -613,23 +379,11 @@ export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
         //#endregion making menus floating (on mobile), not shifting the content
     };
 }, { prefix: 'navb' });
-export function NavbarMenu(props) {
-    // jsx:
-    return (React.createElement(NavButton
-    // other props:
-    , { ...props, 
-        // variants:
-        mild: props.mild ?? false, 
-        // classes:
-        mainClass: props.mainClass ?? '' }));
-}
-export { NavbarMenu as Menu };
 export function Navbar(props) {
     // styles:
     const sheet = useNavbarSheet();
     // states:
-    const navbarRef = useRef(null);
-    const compactState = useCompactState(props, navbarRef);
+    const [compactDn, setCompactDn] = useState(false);
     const [isActive, setActive] = useTogglerActive(props);
     // rest props:
     const { 
@@ -637,63 +391,111 @@ export function Navbar(props) {
     defaultActive, // delete, already handled by `useTogglerActive`
     active, // delete, already handled by `useTogglerActive`
     onActiveChange, // delete, already handled by `useTogglerActive`
+    // states:
+    compact, 
+    // components:
+    logo = null, toggler = React.createElement(TogglerMenuButton, null), 
     // children:
-    logo, toggler, children, ...restProps } = props;
+    children: listFn, ...restNavbarProps } = props;
+    const { 
+    // layouts:
+    size, 
+    // orientation,
+    nude, 
+    // colors:
+    theme, gradient, outlined, mild = false, 
+    // <Indicator> states:
+    // enabled, // not supported yet
+    inheritEnabled, readOnly, inheritReadOnly,
+    // active,
+    // inheritActive,
+     } = restNavbarProps;
     // fn props:
+    const compactFn = (compact /*controllable*/ ?? compactDn /*uncontrollable*/);
     const mildFn = props.mild ?? false;
+    // verifies:
+    const list = listFn?.(compactFn);
+    React.Children.only(list);
+    if (!React.isValidElement(list))
+        throw Error('Invalid child element.');
+    // dom effects:
+    const navbarRef = useRef(null);
+    const menusRef = useRef(null);
+    const triggerRender = useTriggerRender();
+    const responsiveCallback = useCallback(() => {
+        // conditions:
+        if (compact !== undefined)
+            return; // controllable [compact] is set => no uncontrollable required
+        if (!compactDn) {
+            triggerRender();
+        }
+        else {
+            setCompactDn(false);
+        } // if
+    }, [compact, compactDn, triggerRender]);
+    useResponsive(navbarRef, responsiveCallback);
+    // eslint-disable-next-line
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (compact !== undefined)
+            return; // controllable [compact] is set => no uncontrollable required
+        if (compactDn)
+            return; // already compacted => nothing more fallback
+        const hasOverflowed = !!menusRef.current && isOverflowed(menusRef.current);
+        if (hasOverflowed) {
+            setCompactDn(true);
+            if (isActive)
+                setActive(false);
+        } // if
+    }); // runs on every render & DOM has been updated
     // jsx fn props:
     const logoFn = (() => {
-        // nodestrap's component:
-        if (isTypeOf(logo, Element))
-            return (React.createElement(logo.type
-            // other props:
-            , { ...logo.props, 
+        // no component:
+        if ((logo === undefined) || (logo === null) || (logo === false) || (logo === true)) {
+            return React.createElement(React.Fragment, null);
+        } // if
+        // native component:
+        if (React.isValidElement(logo) && (typeof (logo.type) === 'string')) {
+            return (React.createElement("div", { 
                 // classes:
-                classes: [...(logo.props.classes ?? []),
-                    'logo', // inject logo class
-                ] }));
-        // other component:
-        return logo && (React.createElement("div", { 
+                className: 'logo wrapper' }, logo));
+        } // if
+        // assumes as nodestrap's component:
+        const defaultLogoProps = {
             // classes:
-            className: 'logo wrapper' }, logo));
+            classes: [...(logo.props.classes ?? []),
+                'logo', // inject logo class
+            ],
+        };
+        return React.cloneElement(React.cloneElement(logo, defaultLogoProps), logo.props);
     })();
     const togglerFn = (() => {
-        // default (unset):
-        if (toggler === undefined)
-            return (React.createElement(TogglerMenuButton
-            // accessibilities:
-            , { 
-                // accessibilities:
-                active: isActive, onActiveChange: (newActive) => {
-                    setActive(newActive);
-                }, 
-                // variants:
-                mild: mildFn, 
+        // no component:
+        if ((toggler === undefined) || (toggler === null) || (toggler === false) || (toggler === true)) {
+            return React.createElement(React.Fragment, null);
+        } // if
+        // native component:
+        if (React.isValidElement(toggler) && (typeof (toggler.type) === 'string')) {
+            return (React.createElement("div", { 
                 // classes:
-                classes: [
-                    'toggler', // inject toggler class
-                ] }));
-        // nodestrap's component:
-        if (isTypeOf(toggler, Element))
-            return (React.createElement(toggler.type
-            // other props:
-            , { ...toggler.props, 
-                // classes:
-                classes: [...(toggler.props.classes ?? []),
-                    'toggler', // inject toggler class
-                ], ...(isTypeOf(toggler, Indicator) ? {
-                    // accessibilities:
-                    active: toggler.props.active ?? isActive,
-                } : {}), ...(isTypeOf(toggler, Check) ? {
-                    // accessibilities:
-                    onActiveChange: toggler.props.onActiveChange ?? ((newActive) => {
-                        setActive(newActive);
-                    }),
-                } : {}) }));
-        // other component:
-        return toggler && (React.createElement("div", { 
+                className: 'toggler wrapper' }, toggler));
+        } // if
+        // assumes as nodestrap's component:
+        const defaultTogglerProps = {
             // classes:
-            className: 'toggler wrapper' }, toggler));
+            classes: [...(toggler.props.classes ?? []),
+                'toggler', // inject toggler class
+            ],
+            // variants:
+            mild: mildFn,
+            // accessibilities:
+            active: isActive,
+            onActiveChange: (newActive) => {
+                toggler.props.onActiveChange?.(newActive);
+                setActive(newActive);
+            }
+        };
+        return React.cloneElement(React.cloneElement(toggler, defaultTogglerProps), toggler.props);
     })();
     // handlers:
     // watch [escape key] on the whole navbar, including menus & toggler:
@@ -714,21 +516,81 @@ export function Navbar(props) {
         } // if
     };
     // jsx:
-    return (React.createElement(Indicator, { ...restProps, 
+    const menusComponent = (!compactFn
+        ?
+            React.createElement("div", { 
+                // essentials:
+                ref: menusRef, 
+                // classes:
+                className: 'menus' })
+        :
+            React.createElement(Collapse
+            // essentials:
+            , { 
+                // essentials:
+                elmRef: menusRef, 
+                // accessibilities:
+                active: isActive, 
+                // classes:
+                classes: [
+                    'menus',
+                ], 
+                // variants:
+                mild: mild }));
+    const defaultListProps = {
         // semantics:
-        semanticTag: props.semanticTag ?? 'nav', semanticRole: props.semanticRole ?? 'navigation', 
+        semanticTag: ['ul', 'ol'],
+        semanticRole: 'list',
+        // styles:
+        listStyle: 'flat',
+        // behaviors:
+        actionCtrl: true,
+        // events:
+        onClick: (e) => {
+            list.props.onClick?.(e);
+            handleClick(e);
+        },
+        onAnimationEnd: (e) => {
+            list.props.onAnimationEnd?.(e);
+            /*
+                active/passive rely on `.menus`' active/passive
+                
+                // todo will be perfected soon:
+                enable/disable rely on `NavbarMenu` enable/disable
+                if the `Navbar` doesn't have any `NavbarMenu` it wouldn't work
+            */
+            // triggers `Navbar`'s onAnimationEnd event
+            e.currentTarget.parentElement?.dispatchEvent(new AnimationEvent('animationend', { animationName: e.animationName, bubbles: true }));
+        },
+        // variants:
+        // layouts:
+        size: size,
+        // orientation     : orientation,
+        nude: nude,
+        // colors:
+        theme: theme,
+        gradient: gradient,
+        outlined: outlined,
+        mild: mild,
+        // <Indicator> states:
+        // enabled         : enabled, // not supported yet
+        inheritEnabled: inheritEnabled,
+        readOnly: readOnly,
+        inheritReadOnly: inheritReadOnly,
+    };
+    return (React.createElement(Indicator, { ...restNavbarProps, 
         // essentials:
         elmRef: (elm) => {
             setRef(props.elmRef, elm);
             setRef(navbarRef, elm);
         }, 
-        // accessibilities:
-        active: isActive, 
+        // semantics:
+        semanticTag: props.semanticTag ?? 'nav', semanticRole: props.semanticRole ?? 'navigation', 
         // variants:
         mild: mildFn, 
         // classes:
         mainClass: props.mainClass ?? sheet.main, stateClasses: [...(props.stateClasses ?? []),
-            compactState.class,
+            (compactFn ? 'compact' : null),
         ], 
         // events:
         onKeyUp: (e) => {
@@ -737,39 +599,6 @@ export function Navbar(props) {
         } },
         logoFn,
         togglerFn,
-        children && React.createElement("div", { 
-            // classes:
-            className: 'menus', 
-            // events:
-            onAnimationEnd: (e) => {
-                /*
-                    active/passive rely on `.menus`' active/passive
-                    
-                    // todo will be perfected soon:
-                    enable/disable rely on `NavbarMenu` enable/disable
-                    if the `Navbar` doesn't have any `NavbarMenu` it wouldn't work
-                */
-                // triggers `Navbar`'s onAnimationEnd event
-                e.currentTarget.parentElement?.dispatchEvent(new AnimationEvent('animationend', { animationName: e.animationName, bubbles: true }));
-            } }, React.Children.map(children, (child, index) => (isTypeOf(child, NavbarMenu)
-            ?
-                React.createElement(child.type
-                // other props:
-                , { ...child.props, 
-                    // essentials:
-                    key: child.key ?? index, 
-                    // events:
-                    onClick: (e) => {
-                        child.props.onClick?.(e);
-                        handleClick(e);
-                    } })
-            :
-                React.createElement(NavbarMenu
-                // essentials:
-                , { 
-                    // essentials:
-                    key: index, 
-                    // events:
-                    onClick: handleClick }, child))))));
+        React.cloneElement(menusComponent, undefined, React.cloneElement(React.cloneElement(list, defaultListProps), list.props))));
 }
 export { Navbar as default };
