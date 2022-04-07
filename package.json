@@ -1,6 +1,6 @@
 {
   "name": "@nodestrap/navbar",
-  "version": "4.0.10",
+  "version": "4.0.11",
   "description": "A responsive navigation header. Supports for branding, navigation and more.",
   "type": "module",
   "main": "dist/Navbar.js",
@@ -40,11 +40,11 @@
     "@nodestrap/element": "^4.0.9",
     "@nodestrap/hooks": "^4.0.2",
     "@nodestrap/indicator": "^4.0.8",
-    "@nodestrap/list": "^4.0.14",
-    "@nodestrap/responsive": "^4.0.5",
+    "@nodestrap/list": "^4.0.15",
+    "@nodestrap/responsive": "^4.0.6",
     "@nodestrap/toggler-menu-button": "^4.0.4",
     "@nodestrap/utilities": "^4.0.3",
-    "@types/react": "^17.0.43",
+    "@types/react": "^17.0.44",
     "react": "^17.0.2"
   }
 }

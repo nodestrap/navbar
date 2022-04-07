@@ -30,7 +30,7 @@ import {
 setRef, } from '@nodestrap/utilities';
 import { 
 // hooks:
-usesSizeVariant, expandBorderRadius, usesPadding, expandPadding, 
+usesSizeVariant, expandBorderRadius, expandPadding, 
 // configs:
 cssProps as bcssProps, } from '@nodestrap/basic';
 import { useTogglerActive, Indicator, } from '@nodestrap/indicator';
@@ -44,64 +44,25 @@ import {
 Collapse, } from '@nodestrap/collapse';
 import { TogglerMenuButton, } from '@nodestrap/toggler-menu-button';
 // styles:
-const wrapperElm = '.wrapper';
 const logoElm = '.logo';
 const togglerElm = '.toggler';
 const menusElm = '.menus'; // .menus
-const listElm = '*'; // ------ > .list
-const menuElm = '*>*'; // -------------- > .wrapper > .listItem
-export const usesWrapperLayout = () => {
-    // dependencies:
-    // spacings:
-    const [paddings] = usesPadding();
-    return style({
-        ...imports([
-            // spacings:
-            paddings(),
-        ]),
-        ...style({
-            // layouts:
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexWrap: 'nowrap',
-            // spacings:
-            ...expandPadding(), // expand padding css vars
-        }),
-    });
-};
+const listElm = ['ul', 'ol']; // ------ > .list
+const menuElm = 'li>*'; // -------------- > .wrapper > .listItem
 export const usesItemLayout = () => {
     return style({
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'item')), // apply general cssProps starting with item***
     });
 };
-export const usesSecondaryLayout = () => {
-    // dependencies:
-    // spacings:
-    const [, , paddingDecls] = usesPadding();
-    return style({
-        // layouts:
-        justifySelf: 'center',
-        alignSelf: 'center',
-        // spacings:
-        [paddingDecls.paddingInline]: '0px',
-        [paddingDecls.paddingBlock]: '0px', // discard padding
-    });
-};
 export const usesLogoLayout = () => {
     return style({
-        // layouts:
-        gridArea: '1 / -3',
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'logo')), // apply general cssProps starting with logo***
     });
 };
 export const usesTogglerLayout = () => {
     return style({
-        // layouts:
-        gridArea: '1 / 2',
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'toggler')), // apply general cssProps starting with toggler***
     });
@@ -109,7 +70,6 @@ export const usesTogglerLayout = () => {
 export const usesMenusLayout = () => {
     return style({
         // layouts:
-        gridArea: 'menus',
         display: 'grid',
         // borders:
         border: 'none',
@@ -129,8 +89,6 @@ export const usesMenusLayout = () => {
 };
 export const usesMenusCompactLayout = () => {
     return style({
-        // layouts:
-        gridArea: '-1 / -3 / -1 / 3',
         // backgrounds:
         backg: 'inherit',
         // borders:
@@ -158,8 +116,6 @@ export const usesListLayout = () => {
 };
 export const usesMenuLayout = () => {
     return style({
-        // // sizes:
-        // flex : [[0, 1, 'auto']], // ungrowable, shrinkable (if menu allows wrap), initial from it's width
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'menu')), // apply general cssProps starting with menu***
     });
@@ -192,19 +148,9 @@ export const usesNavbarLayout = () => {
             justifyItems: 'stretch',
             alignItems: 'stretch',
             // children:
-            ...children(wrapperElm, {
-                ...imports([
-                    usesWrapperLayout(),
-                ]),
-            }),
             ...children([logoElm, togglerElm, menusElm], {
                 ...imports([
                     usesItemLayout(),
-                ]),
-            }),
-            ...children([logoElm, togglerElm], {
-                ...imports([
-                    usesSecondaryLayout(),
                 ]),
             }),
             ...children(logoElm, {
@@ -353,20 +299,37 @@ export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
         gapInline: bcssProps.paddingInline,
         gapBlock: bcssProps.paddingBlock,
         //#endregion spacings
-        // menus:
+        //#region sizes
+        blockSize: 'auto',
+        //#endregion sizes
+        //#region menus
+        menusGridAreaFull: 'menus',
+        menusGridAreaCompact: '-1 / -3 / -1 / 3',
+        menusAlignSelf: 'stretch',
         // at full mode, cancel-out Navbar's paddingBlock with negative margin:
         menusMarginBlockFull: [['calc(0px -', bcssProps.paddingBlock, ')']],
         // at compact mode, cancel-out Navbar's paddingInline with negative margin:
         menusMarginInlineCompact: [['calc(0px -', ccssProps.paddingInline, ')']],
-        // list:
+        //#endregion menus
+        //#region list
         listJustifySelfFull: 'end',
-        // menu:
+        //#endregion list
+        //#region menu
         menuDisplay: 'flex',
         menuFlexDirection: 'column',
         menuJustifyContent: 'center',
         menuAlignItems: 'center',
         menuWhiteSpace: 'nowrap',
         menuTextAlign: 'center',
+        //#endregion menu
+        //#region logo
+        logoGridArea: '1 / -3',
+        logoAlignSelf: 'center',
+        //#endregion logo
+        //#region toggler
+        togglerGridArea: '1 / 2',
+        togglerAlignSelf: 'center',
+        //#endregion toggler
         //#region making menus floating (on mobile), not shifting the content
         ...{
             // do not make row spacing when the menus shown (we'll make the menus as ghost element, floating in front of the contents below the navbar)
@@ -452,13 +415,13 @@ export function Navbar(props) {
     const logoFn = (() => {
         // no component:
         if ((logo === undefined) || (logo === null) || (logo === false) || (logo === true)) {
-            return React.createElement(React.Fragment, null);
+            return React.createElement("div", { className: 'logo' }); // an empty logo must be exist for layouting purpose
         } // if
         // native component:
         if (React.isValidElement(logo) && (typeof (logo.type) === 'string')) {
-            return (React.createElement("div", { 
-                // classes:
-                className: 'logo wrapper' }, logo));
+            return React.cloneElement(logo, {
+                className: logo.props.className ? `${logo.props.className} logo` : 'logo',
+            });
         } // if
         // assumes as nodestrap's component:
         const defaultLogoProps = {
@@ -472,13 +435,13 @@ export function Navbar(props) {
     const togglerFn = (() => {
         // no component:
         if ((toggler === undefined) || (toggler === null) || (toggler === false) || (toggler === true)) {
-            return React.createElement(React.Fragment, null);
+            return React.createElement("div", { className: 'toggler' }); // an empty toggler must be exist for layouting purpose
         } // if
         // native component:
         if (React.isValidElement(toggler) && (typeof (toggler.type) === 'string')) {
-            return (React.createElement("div", { 
-                // classes:
-                className: 'toggler wrapper' }, toggler));
+            return React.cloneElement(toggler, {
+                className: toggler.props.className ? `${toggler.props.className} toggler` : 'toggler',
+            });
         } // if
         // assumes as nodestrap's component:
         const defaultTogglerProps = {

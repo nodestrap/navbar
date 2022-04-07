@@ -74,7 +74,6 @@ import {
     // hooks:
     usesSizeVariant,
     expandBorderRadius,
-    usesPadding,
     expandPadding,
     
     
@@ -124,85 +123,26 @@ import {
 
 
 // styles:
-const wrapperElm = '.wrapper'
 const logoElm    = '.logo'
 const togglerElm = '.toggler'
-const menusElm   = '.menus' // .menus
-const listElm    = '*'      // ------ > .list
-const menuElm    = '*>*'    // -------------- > .wrapper > .listItem
+const menusElm   = '.menus'     // .menus
+const listElm    = ['ul', 'ol'] // ------ > .list
+const menuElm    = 'li>*'       // -------------- > .wrapper > .listItem
 
-export const usesWrapperLayout = () => {
-    // dependencies:
-    
-    // spacings:
-    const [paddings] = usesPadding();
-    
-    
-    
-    return style({
-        ...imports([
-            // spacings:
-            paddings(),
-        ]),
-        ...style({
-            // layouts:
-            display        : 'flex',   // use block flexbox, so it takes the entire parent's width
-            flexDirection  : 'row',    // the flex direction to horz, so we can adjust the content's height
-            justifyContent : 'center', // center contents (text, logo, etc) horizontally
-            alignItems     : 'center', // center contents (text, logo, etc) vertically (if the content's height is shorter than the section)
-            flexWrap       : 'nowrap', // no wrapping
-            
-            
-            
-            // spacings:
-            ...expandPadding(), // expand padding css vars
-        }),
-    });
-};
 export const usesItemLayout = () => {
     return style({
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'item')), // apply general cssProps starting with item***
     });
 };
-export const usesSecondaryLayout = () => {
-    // dependencies:
-    
-    // spacings:
-    const [, , paddingDecls] = usesPadding();
-    
-    
-    
-    return style({
-        // layouts:
-        justifySelf    : 'center', // center self horizontally
-        alignSelf      : 'center', // center self vertically
-        
-        
-        
-        // spacings:
-        [paddingDecls.paddingInline] : '0px', // discard padding
-        [paddingDecls.paddingBlock ] : '0px', // discard padding
-    });
-};
 export const usesLogoLayout = () => {
     return style({
-        // layouts:
-        gridArea       : '1 / -3', // place at the same `menus`' row / place at the 3rd column from the right (negative columns are placed after all positive ones was placed)
-        
-        
-        
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'logo')), // apply general cssProps starting with logo***
     });
 };
 export const usesTogglerLayout = () => {
     return style({
-        // layouts:
-        gridArea       : '1 / 2', // place at the same `menus`' row / place at the 2nd column from the left
-        
-        
-        
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'toggler')), // apply general cssProps starting with toggler***
     });
@@ -211,7 +151,6 @@ export const usesTogglerLayout = () => {
 export const usesMenusLayout = () => {
     return style({
         // layouts:
-        gridArea       : 'menus',   // place at the defined `menus` area
         display        : 'grid',
         
         
@@ -243,11 +182,6 @@ export const usesMenusLayout = () => {
 };
 export const usesMenusCompactLayout = () => {
     return style({
-        // layouts:
-        gridArea       : '-1 / -3 / -1 / 3', // place at the 1st column from the bottom / place start from the 3rd column from the right to 3rd column from the left (negative columns are placed after all positive ones was placed)
-        
-        
-        
         // backgrounds:
         backg          : 'inherit', // supports for floating menus's background
         
@@ -286,11 +220,6 @@ export const usesListLayout = () => {
 
 export const usesMenuLayout = () => {
     return style({
-        // // sizes:
-        // flex : [[0, 1, 'auto']], // ungrowable, shrinkable (if menu allows wrap), initial from it's width
-        
-        
-        
         // customize:
         ...usesGeneralProps(usesPrefixedProps(cssProps, 'menu')), // apply general cssProps starting with menu***
     });
@@ -330,19 +259,9 @@ export const usesNavbarLayout = () => {
             
             
             // children:
-            ...children(wrapperElm, { // wrapper elements
-                ...imports([
-                    usesWrapperLayout(),
-                ]),
-            }),
             ...children([logoElm, togglerElm, menusElm], { // all sections
                 ...imports([
                     usesItemLayout(),
-                ]),
-            }),
-            ...children([logoElm, togglerElm], { // secondary sections
-                ...imports([
-                    usesSecondaryLayout(),
                 ]),
             }),
             ...children(logoElm, { // logo section
@@ -516,56 +435,85 @@ export const useNavbarSheet = createUseSheet(() => [
 export const [cssProps, cssDecls, cssVals, cssConfig] = createCssConfig(() => {
     return {
         //#region positions
-        zIndex                    : 1020,
-        position                  : 'sticky',
-        insetBlockStart           : '0px',
+        zIndex          : 1020,
+        position        : 'sticky',
+        insetBlockStart : '0px',
         //#endregion positions
         
         
         
         //#region backgrounds
-        boxShadow                 : [[0, 0, '10px', 'rgba(0,0,0,0.5)']],
+        boxShadow : [[0, 0, '10px', 'rgba(0,0,0,0.5)']],
         //#endregion backgrounds
         
         
         
         //#region borders
-        borderInline              : 'none',
-        borderBlockStart          : 'none',
-        borderRadius              : 0,
+        borderInline     : 'none',
+        borderBlockStart : 'none',
+        borderRadius     : 0,
         //#endregion borders
         
         
         
         //#region spacings
-        paddingInline             : ccssProps.paddingInline, // override to Container
-        paddingBlock              : bcssProps.paddingBlock,  // override to Basic
+        paddingInline : ccssProps.paddingInline, // override to Container
+        paddingBlock  : bcssProps.paddingBlock,  // override to Basic
         
-        gapInline                 : bcssProps.paddingInline,
-        gapBlock                  : bcssProps.paddingBlock,
+        gapInline     : bcssProps.paddingInline,
+        gapBlock      : bcssProps.paddingBlock,
         //#endregion spacings
         
         
         
-        // menus:
+        //#region sizes
+        blockSize     : 'auto',
+        //#endregion sizes
+        
+        
+        
+        //#region menus
+        menusGridAreaFull        : 'menus',   // place at the defined `menus` area
+        menusGridAreaCompact     : '-1 / -3 / -1 / 3', // place at the 1st column from the bottom / place start from the 3rd column from the right to 3rd column from the left (negative columns are placed after all positive ones was placed)
+        menusAlignSelf           : 'stretch',
+        
         // at full mode, cancel-out Navbar's paddingBlock with negative margin:
-        menusMarginBlockFull      : [['calc(0px -', bcssProps.paddingBlock,  ')']],
+        menusMarginBlockFull     : [['calc(0px -', bcssProps.paddingBlock,  ')']],
         
         // at compact mode, cancel-out Navbar's paddingInline with negative margin:
-        menusMarginInlineCompact  : [['calc(0px -', ccssProps.paddingInline, ')']],
+        menusMarginInlineCompact : [['calc(0px -', ccssProps.paddingInline, ')']],
+        //#endregion menus
         
         
         
-        // list:
-        listJustifySelfFull       : 'end',
+        //#region list
+        listJustifySelfFull : 'end',
+        //#endregion list
         
-        // menu:
-        menuDisplay               : 'flex',
-        menuFlexDirection         : 'column',
-        menuJustifyContent        : 'center',
-        menuAlignItems            : 'center',
-        menuWhiteSpace            : 'nowrap',
-        menuTextAlign             : 'center',
+        
+        
+        //#region menu
+        menuDisplay        : 'flex',
+        menuFlexDirection  : 'column',
+        menuJustifyContent : 'center',
+        menuAlignItems     : 'center',
+        menuWhiteSpace     : 'nowrap',
+        menuTextAlign      : 'center',
+        //#endregion menu
+        
+        
+        
+        //#region logo
+        logoGridArea     : '1 / -3', // place at the same `menus`' row / place at the 3rd column from the right (negative columns are placed after all positive ones was placed)
+        logoAlignSelf    : 'center',
+        //#endregion logo
+        
+        
+        
+        //#region toggler
+        togglerGridArea  : '1 / 2', // place at the same `menus`' row / place at the 2nd column from the left
+        togglerAlignSelf : 'center',
+        //#endregion toggler
         
         
         
@@ -599,8 +547,8 @@ export interface NavbarProps<TElement extends HTMLElement = HTMLElement>
     
     
     // components:
-    logo?     : React.ReactComponentElement<any, ElementProps> | boolean
-    toggler?  : React.ReactComponentElement<any, ElementProps> | boolean
+    logo?     : React.ReactComponentElement<any, ElementProps> | null | boolean
+    toggler?  : React.ReactComponentElement<any, ElementProps> | null | boolean
     
     
     // children:
@@ -717,21 +665,16 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
     const logoFn = (() => {
         // no component:
         if ((logo === undefined) || (logo === null) || (logo === false) || (logo === true)) {
-            return <></>;
+            return <div className='logo'></div>; // an empty logo must be exist for layouting purpose
         } // if
         
         
         
         // native component:
-        if (React.isValidElement(logo) && (typeof(logo.type) === 'string')) {
-            return (
-                <div
-                    // classes:
-                    className='logo wrapper'
-                >
-                    { logo }
-                </div>
-            );
+        if (React.isValidElement<HTMLElement>(logo) && (typeof(logo.type) === 'string')) {
+            return React.cloneElement(logo, {
+                className: logo.props.className ? `${logo.props.className} logo` : 'logo',
+            });
         } // if
         
         
@@ -749,21 +692,16 @@ export function Navbar<TElement extends HTMLElement = HTMLElement>(props: Navbar
     const togglerFn = (() => {
         // no component:
         if ((toggler === undefined) || (toggler === null) || (toggler === false) || (toggler === true)) {
-            return <></>;
+            return <div className='toggler'></div>; // an empty toggler must be exist for layouting purpose
         } // if
         
         
         
         // native component:
-        if (React.isValidElement(toggler) && (typeof(toggler.type) === 'string')) {
-            return (
-                <div
-                    // classes:
-                    className='toggler wrapper'
-                >
-                    { toggler }
-                </div>
-            );
+        if (React.isValidElement<HTMLElement>(toggler) && (typeof(toggler.type) === 'string')) {
+            return React.cloneElement(toggler, {
+                className: toggler.props.className ? `${toggler.props.className} toggler` : 'toggler',
+            });
         } // if
         
         

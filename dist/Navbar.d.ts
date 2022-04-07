@@ -1,9 +1,7 @@
 import { default as React } from 'react';
 import type { ElementProps } from '@nodestrap/element';
 import { TogglerActiveProps, IndicatorProps } from '@nodestrap/indicator';
-export declare const usesWrapperLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesItemLayout: () => import("@cssfn/cssfn").Rule;
-export declare const usesSecondaryLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesLogoLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesTogglerLayout: () => import("@cssfn/cssfn").Rule;
 export declare const usesMenusLayout: () => import("@cssfn/cssfn").Rule;
@@ -26,6 +24,10 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
+    blockSize: string;
+    menusGridAreaFull: string;
+    menusGridAreaCompact: string;
+    menusAlignSelf: string;
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
     listJustifySelfFull: string;
@@ -35,6 +37,10 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
+    logoGridArea: string;
+    logoAlignSelf: string;
+    togglerGridArea: string;
+    togglerAlignSelf: string;
 }>, cssDecls: import("@cssfn/css-config").Decls<{
     zIndex: number;
     position: string;
@@ -47,6 +53,10 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
+    blockSize: string;
+    menusGridAreaFull: string;
+    menusGridAreaCompact: string;
+    menusAlignSelf: string;
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
     listJustifySelfFull: string;
@@ -56,6 +66,10 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
+    logoGridArea: string;
+    logoAlignSelf: string;
+    togglerGridArea: string;
+    togglerAlignSelf: string;
 }>, cssVals: import("@cssfn/css-config").Vals<{
     zIndex: number;
     position: string;
@@ -68,6 +82,10 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     paddingBlock: import("@cssfn/css-types").Cust.Ref;
     gapInline: import("@cssfn/css-types").Cust.Ref;
     gapBlock: import("@cssfn/css-types").Cust.Ref;
+    blockSize: string;
+    menusGridAreaFull: string;
+    menusGridAreaCompact: string;
+    menusAlignSelf: string;
     menusMarginBlockFull: string[][];
     menusMarginInlineCompact: string[][];
     listJustifySelfFull: string;
@@ -77,11 +95,15 @@ export declare const cssProps: import("@cssfn/css-config").Refs<{
     menuAlignItems: string;
     menuWhiteSpace: string;
     menuTextAlign: string;
+    logoGridArea: string;
+    logoAlignSelf: string;
+    togglerGridArea: string;
+    togglerAlignSelf: string;
 }>, cssConfig: import("@cssfn/css-config").CssConfigSettings;
 export interface NavbarProps<TElement extends HTMLElement = HTMLElement> extends Omit<IndicatorProps<TElement>, 'enabled'>, Omit<TogglerActiveProps, 'enabled'> {
     compact?: boolean;
-    logo?: React.ReactComponentElement<any, ElementProps> | boolean;
-    toggler?: React.ReactComponentElement<any, ElementProps> | boolean;
+    logo?: React.ReactComponentElement<any, ElementProps> | null | boolean;
+    toggler?: React.ReactComponentElement<any, ElementProps> | null | boolean;
     children?: ((compact: boolean) => React.ReactNode);
 }
 export declare function Navbar<TElement extends HTMLElement = HTMLElement>(props: NavbarProps<TElement>): JSX.Element;
